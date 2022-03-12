@@ -3,6 +3,7 @@
 using Application.Consumers;
 using Application.Extensions;
 using Infrastructure;
+using Infrastructure.Database.MongoDb;
 using MassTransit;
 using Serilog;
 using Serilog.Events;
@@ -34,6 +35,12 @@ builder.Services.AddMassTransit(x =>
 });
 builder.Services.AddMassTransitHostedService();
 
+// MongoDb
+builder.Services.Configure<MarketPriceLakeDatabaseConfiguration>(
+builder.Configuration.GetSection("MarketPriceLakeDatabase"));
+
+
+// Serilog
 builder.Host.UseSerilog((host, log) =>
 {
     if (host.HostingEnvironment.IsProduction())

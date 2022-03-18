@@ -9,6 +9,6 @@ namespace Application.Repositories
 {
     public interface ITickerRepository
     {
-        public Task<Ticker> AddTicker(Ticker ticker);
+        public Task<Ticker> AddTicker(Ticker ticker, Timeseries timeseries);
     }
 }

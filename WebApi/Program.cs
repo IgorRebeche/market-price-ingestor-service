@@ -5,10 +5,13 @@ using Application.Extensions;
 using Infrastructure;
 using Infrastructure.Database.MongoDb;
 using MassTransit;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Serilog;
 using Serilog.Events;
 
 var builder = WebApplication.CreateBuilder(args);
+
 
 // Add services to the container.
 builder.Services.AddControllers();
@@ -56,6 +59,12 @@ builder.Host.UseSerilog((host, log) =>
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddHealthChecks();
+builder.Services.Configure<HealthCheckPublisherOptions>(options =>
+{
+    options.Delay = TimeSpan.FromSeconds(2);
+    options.Predicate = (check) => check.Tags.Contains("ready");
+});
 
 var app = builder.Build();
 
@@ -69,8 +78,21 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-app.UseAuthorization();
-
 app.MapControllers();
+
+app.UseRouting();
+
+app.UseAuthorization();
+//app.MapHealthChecks("/health");
+app.UseEndpoints(endpoints =>
+{
+    endpoints.MapHealthChecks("/health/ready", new HealthCheckOptions()
+    {
+        Predicate = (check) => check.Tags.Contains("ready"),
+    });
+
+    endpoints.MapHealthChecks("/health/live", new HealthCheckOptions());
+});
+
 
 app.Run();

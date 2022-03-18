@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using Application.UseCases;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
@@ -12,6 +13,7 @@ namespace Application.Extensions
     {
         public static IServiceCollection AddApplication(this IServiceCollection services, IConfiguration config)
         {
+            services.AddScoped<IInsertTickerUseCase, InsertTickerUseCase>();
             return services;
         }
     }

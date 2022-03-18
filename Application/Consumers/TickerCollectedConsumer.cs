@@ -1,4 +1,5 @@
 ﻿using Application.Repositories;
+using Application.UseCases;
 using Events;
 using MassTransit;
 using Microsoft.Extensions.Logging;
@@ -14,19 +15,19 @@ namespace Application.Consumers
             IConsumer<ITickerCollected>
     {
         private ILogger<TickerCollectedConsumer> _logger;
-        private ITickerRepository _tickerRepository;
+        private IInsertTickerUseCase _tickerCollectedUseCase;
 
-        public TickerCollectedConsumer(ILogger<TickerCollectedConsumer> logger, ITickerRepository tickerRepository)
+        public TickerCollectedConsumer(ILogger<TickerCollectedConsumer> logger, IInsertTickerUseCase tickerCollectedUseCase)
         {
             _logger = logger;
-            _tickerRepository = tickerRepository;
+            _tickerCollectedUseCase = tickerCollectedUseCase;
         }
 
         public async Task Consume(ConsumeContext<ITickerCollected> context)
         {
             _logger.LogInformation("Msg Consumed: {@0}", context.Message);
 
-            await _tickerRepository.AddTicker(new Domain.Ticker { Price=1, TimeStamp= DateTime.Now });
+            await _tickerCollectedUseCase.InsertTickerAsync(context.Message.MapToTicker());
 
         }
     }

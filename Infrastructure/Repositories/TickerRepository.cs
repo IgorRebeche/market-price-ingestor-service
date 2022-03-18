@@ -14,15 +14,17 @@ namespace Infrastructure.Repositories
     public class TickerRepository : ITickerRepository
     {
         private IMongoCollection<Ticker> _tickersCollection;
+        private IMongoDatabase _mongoDatabase;
 
         public TickerRepository(IOptions<MarketPriceLakeDatabaseConfiguration> mongoConfig)
         {
             var mongoClient = new MongoClient(mongoConfig.Value.ConnectionString);
-            var mongoDatabase = mongoClient.GetDatabase(mongoConfig.Value.DatabaseName);
-            _tickersCollection = mongoDatabase.GetCollection<Ticker>("Tickers");
+            _mongoDatabase = mongoClient.GetDatabase(mongoConfig.Value.DatabaseName);
         }
-        public async Task<Ticker> AddTicker(Ticker ticker)
+        public async Task<Ticker> AddTicker(Ticker ticker, Timeseries timeseries)
         {
+            var collectionName = $"{ticker.BrokerName}.{ticker.Symbol}.{timeseries}";
+            _tickersCollection = _mongoDatabase.GetCollection<Ticker>(collectionName);
             await _tickersCollection.InsertOneAsync(ticker);
             
             return ticker;

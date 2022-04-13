@@ -6,12 +6,12 @@ using System.Threading.Tasks;
 
 namespace Events
 {
-    public interface ITickerCollected
+    public interface ITickerCollectedV2
     {
         public string BrokerName { get; set; }
         public string Symbol { get; set; }
         public decimal Price { get; set; }
         public string Volume { get; set; }
-        public long TimeStamp { get; set; }
+        public long Timestamp { get; set; }
     }
 }

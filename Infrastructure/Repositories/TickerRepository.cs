@@ -1,13 +1,8 @@
-﻿using Application.Repositories;
-using Domain;
+﻿using Domain;
+using Domain.Repositories;
 using Infrastructure.Database.MongoDb;
 using Microsoft.Extensions.Options;
 using MongoDB.Driver;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Infrastructure.Repositories
 {
@@ -19,13 +14,24 @@ namespace Infrastructure.Repositories
         public TickerRepository(IOptions<MarketPriceLakeDatabaseConfiguration> mongoConfig)
         {
             var mongoClient = new MongoClient(mongoConfig.Value.ConnectionString);
-            _mongoDatabase = mongoClient.GetDatabase(mongoConfig.Value.DatabaseName);
+            _mongoDatabase = mongoClient.GetDatabase(mongoConfig.Value.Database);
         }
         public async Task<Ticker> AddTicker(Ticker ticker, Timeseries timeseries)
         {
             var collectionName = $"{ticker.BrokerName}.{ticker.Symbol}.{timeseries}";
             _tickersCollection = _mongoDatabase.GetCollection<Ticker>(collectionName);
+            
+            var options = new CreateIndexOptions { Unique = true };
+            var indexKeysDefine = Builders<Ticker>.IndexKeys
+                .Ascending(indexKey => indexKey.Timestamp)
+                .Ascending(indexKey => indexKey.BrokerName)
+                .Ascending(indexKey => indexKey.Symbol)
+                .Ascending(indexKey => indexKey.Price);
+            var indexModel = new CreateIndexModel<Ticker>(indexKeysDefine, options);
+            _ = await _tickersCollection.Indexes.CreateOneAsync(indexModel);
+            
             await _tickersCollection.InsertOneAsync(ticker);
+
             
             return ticker;
         }

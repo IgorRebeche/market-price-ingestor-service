@@ -1,13 +1,7 @@
-﻿using Application.Repositories;
-using Application.UseCases;
-using Events;
+﻿using Application.UseCases;
 using MassTransit;
 using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Market.Price.Binance.Collector.Service.Events;
 
 namespace Application.Consumers
 {

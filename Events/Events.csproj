@@ -5,10 +5,10 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
 	<Version>1.0.1</Version>
-    <Authors>Octocat</Authors>
+    <Authors>Igor Rebeche Rosa</Authors>
     <Company>GitHub</Company>
-	<PackageId>MarketPriceEvents</PackageId>
-    <PackageDescription>This package adds Market Price Events!</PackageDescription>
+	<PackageId>MarketPriceIngestor</PackageId>
+    <PackageDescription>This package adds market price ingestor package!</PackageDescription>
     <RepositoryUrl>https://github.com/IgorRebeche/market-price-ingestor-service</RepositoryUrl>
   </PropertyGroup>
 
@@ -16,6 +16,10 @@
     <Compile Remove="Extensions\**" />
     <EmbeddedResource Remove="Extensions\**" />
     <None Remove="Extensions\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="MarketPriceEvents" Version="1.0.5" />
   </ItemGroup>
 
 </Project>

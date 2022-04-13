@@ -9,7 +9,7 @@
     }
   },
   "profiles": {
-    "market_price_binance_collector_service": {
+    "market_ingestor_service": {
       "commandName": "Project",
       "dotnetRunMessages": true,
       "launchBrowser": true,

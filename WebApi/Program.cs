@@ -4,6 +4,7 @@ using Application.Consumers;
 using Application.Extensions;
 using Infrastructure;
 using Infrastructure.Database.MongoDb;
+using market_price_ingestor_service;
 using MassTransit;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
@@ -42,6 +43,7 @@ builder.Services.AddMassTransitHostedService();
 builder.Services.Configure<MarketPriceLakeDatabaseConfiguration>(
 builder.Configuration.GetSection("MarketPriceLakeDatabase"));
 
+builder.Services.AddHostedService<StartupConfiguration>();
 
 // Serilog
 builder.Host.UseSerilog((host, log) =>

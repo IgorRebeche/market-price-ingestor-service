@@ -11,17 +11,26 @@ services:
         - ~/.docker-conf/rabbitmq/log/:/var/log/rabbitmq
     networks:
         - rabbitmq_go_net
-  cassandra:
-    image: cassandra:4.0
-    ports:
-      - 9042:9042
-    volumes:
-      - ~/apps/cassandra:/var/lib/cassandra
+
+  mongo:
+    image: mongo
+    restart: always
     environment:
-      - CASSANDRA_CLUSTER_NAME=citizix
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: root
+    ports:
+      - 27017:27017
+
+  mongo-express:
+    image: mongo-express
+    restart: always
+    ports:
+      - 8081:8081
+    environment:
+      ME_CONFIG_MONGODB_ADMINUSERNAME: root
+      ME_CONFIG_MONGODB_ADMINPASSWORD: root
+      ME_CONFIG_MONGODB_URL: mongodb://root:root@mongo:27017/
 
 networks:
   rabbitmq_go_net:
     driver: bridge
-
-  cassandra:  # docker network where all cassandra nodes will be put 

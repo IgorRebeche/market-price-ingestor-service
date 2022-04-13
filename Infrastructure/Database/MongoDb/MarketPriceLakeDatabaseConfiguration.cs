@@ -10,7 +10,9 @@ namespace Infrastructure.Database.MongoDb
     {
         public string ConnectionString { get; set; } = null!;
 
-        public string DatabaseName { get; set; } = null!;
-
+        public string Database { get; set; } = null!;
+        
+        public string ConfigurationDatabase { get; set; } = null!;
+        
     }
 }

@@ -1,10 +1,5 @@
 ﻿using Domain;
-using Events;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Market.Price.Binance.Collector.Service.Events;
 
 namespace Application.UseCases
 {
@@ -14,7 +9,7 @@ namespace Application.UseCases
         {
             return new Ticker
             {
-                Timestamp = tickerCollected.TimeStamp,
+                Timestamp = tickerCollected.Timestamp,
                 Price = tickerCollected.Price,
                 Symbol = tickerCollected.Symbol,
                 Volume = Decimal.Parse(tickerCollected.Volume),

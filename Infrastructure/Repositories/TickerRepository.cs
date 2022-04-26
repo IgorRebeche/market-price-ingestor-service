@@ -16,9 +16,9 @@ namespace Infrastructure.Repositories
             var mongoClient = new MongoClient(mongoConfig.Value.ConnectionString);
             _mongoDatabase = mongoClient.GetDatabase(mongoConfig.Value.Database);
         }
-        public async Task<Ticker> AddTicker(Ticker ticker, Timeseries timeseries)
+        public async Task<Ticker> AddTicker(Ticker ticker)
         {
-            var collectionName = $"{ticker.BrokerName}.{ticker.Symbol}.{timeseries}";
+            var collectionName = $"{ticker.BrokerName}.{ticker.Symbol}";
             _tickersCollection = _mongoDatabase.GetCollection<Ticker>(collectionName);
             
             var options = new CreateIndexOptions { Unique = true };
@@ -34,6 +34,32 @@ namespace Infrastructure.Repositories
 
             
             return ticker;
+        }
+
+        public async Task<IEnumerable<Ticker>> GetTickers(string brokerName, string symbol, long timeStampFrom)
+        {
+            var collectionName = $"{brokerName}.{symbol}";
+            _tickersCollection = _mongoDatabase.GetCollection<Ticker>(collectionName);
+
+            var tickers = await _tickersCollection.FindAsync(ticker => ticker.Timestamp >= timeStampFrom).ConfigureAwait(false);
+
+            return tickers.ToList();
+        }
+
+        public async Task<IEnumerable<Ticker>> GetTickersRange(string brokerName, string symbol, long timeStampFrom, long timeStampTo)
+        {
+            var collectionName = $"{brokerName}.{symbol}";
+            _tickersCollection = _mongoDatabase.GetCollection<Ticker>(collectionName);
+            var filterBuilder = Builders<Ticker>.Filter;
+            var filter = filterBuilder.Gte(x => x.Timestamp, timeStampFrom) & filterBuilder.Lte(x => x.Timestamp, timeStampTo);
+
+            var tickers = await _tickersCollection
+                .Find(filter)
+                .SortBy(x => x.Timestamp)
+                .ToListAsync()
+                .ConfigureAwait(false);
+
+            return tickers.ToList();
         }
     }
 }

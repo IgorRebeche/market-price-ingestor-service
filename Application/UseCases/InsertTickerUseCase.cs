@@ -22,7 +22,7 @@ namespace Application.UseCases
 
             if (cannotOperate) throw new Exception("Application Disabled, cant operate!");
                 
-            await _tickerRepository.AddTicker(ticker, Timeseries.RAW);
+            await _tickerRepository.AddTicker(ticker);
         }
 
         private async Task<bool> CanOperate()

@@ -22,7 +22,17 @@
       "launchBrowser": true,
       "launchUrl": "swagger",
       "environmentVariables": {},
-      "applicationUrl": "http://localhost:5002",
+      "applicationUrl": "http://localhost:5000",
+      "dotnetRunMessages": true
+    },
+    "market_price_ingestor_service_docker": {
+      "commandName": "DockerCompose",
+      "launchBrowser": true,
+      "launchUrl": "swagger",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Docker"
+      },
+      "applicationUrl": "http://localhost:5000",
       "dotnetRunMessages": true
     },
     "market_price_ingestor_service_dsv": {

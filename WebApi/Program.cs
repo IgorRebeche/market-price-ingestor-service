@@ -13,6 +13,9 @@ using Serilog.Events;
 
 var builder = WebApplication.CreateBuilder(args);
 
+Log.Logger = new LoggerConfiguration()
+    .WriteTo.Console()
+    .CreateBootstrapLogger();
 
 // Add services to the container.
 builder.Services.AddControllers();
@@ -25,10 +28,10 @@ builder.Services.AddMassTransit(x =>
     x.AddConsumer<TickerCollectedConsumer>();
     x.UsingRabbitMq( (context, cfg) =>
     {
-        cfg.Host("localhost", "/", h =>
+        cfg.Host(builder.Configuration.GetSection("RabbitMqConfigurationOptions:Host").Value, "/", h =>
         {
-            h.Username("guest");
-            h.Password("guest");
+            h.Username(builder.Configuration.GetSection("RabbitMqConfigurationOptions:Username").Value);
+            h.Password(builder.Configuration.GetSection("RabbitMqConfigurationOptions:Password").Value);
         });
 
         cfg.ReceiveEndpoint("Events:ITickerCollected", e =>

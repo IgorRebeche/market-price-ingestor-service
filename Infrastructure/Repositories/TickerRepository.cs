@@ -2,6 +2,7 @@
 using Domain.Repositories;
 using Infrastructure.Database.MongoDb;
 using Microsoft.Extensions.Options;
+using Microsoft.Extensions.Logging;
 using MongoDB.Driver;
 
 namespace Infrastructure.Repositories
@@ -11,12 +12,15 @@ namespace Infrastructure.Repositories
         private IMongoCollection<Ticker> _tickersCollection;
         private IMongoDatabase _mongoDatabase;
 
-        public TickerRepository(IOptions<MarketPriceLakeDatabaseConfiguration> mongoConfig)
+        private ILogger<TickerRepository> _logger;
+
+        public TickerRepository(ILogger<TickerRepository> logger, IOptions<MarketPriceLakeDatabaseConfiguration> mongoConfig)
         {
             var mongoClient = new MongoClient(mongoConfig.Value.ConnectionString);
             _mongoDatabase = mongoClient.GetDatabase(mongoConfig.Value.Database);
+            _logger = logger;
         }
-        public async Task<Ticker> AddTicker(Ticker ticker)
+        public async Task<bool> AddTicker(Ticker ticker)
         {
             var collectionName = $"{ticker.BrokerName}.{ticker.Symbol}";
             _tickersCollection = _mongoDatabase.GetCollection<Ticker>(collectionName);
@@ -30,10 +34,22 @@ namespace Infrastructure.Repositories
             var indexModel = new CreateIndexModel<Ticker>(indexKeysDefine, options);
             _ = await _tickersCollection.Indexes.CreateOneAsync(indexModel);
             
-            await _tickersCollection.InsertOneAsync(ticker);
+            try
+            {
+                await _tickersCollection.InsertOneAsync(ticker);
+            } catch (MongoWriteException ex)
+            {
+                if (ex.WriteError.Category.Equals(ServerErrorCategory.DuplicateKey))
+                {
+                    _logger.LogError("Chave duplicada, ignorando inserção. Ticker {@ticker}", ticker);
+                    return false;
+                }
+
+                throw;
+            }
 
             
-            return ticker;
+            return true;
         }
 
         public async Task<IEnumerable<Ticker>> GetTickers(string brokerName, string symbol, long timeStampFrom)
